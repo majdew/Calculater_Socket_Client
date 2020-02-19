@@ -5,93 +5,49 @@
  */
 package clientsocket;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author majd1
  */
 public class calculator extends javax.swing.JFrame {
 
-    /**
-     * @return the minus
-     */
-    public javax.swing.JButton getMinus() {
-        return minus;
-    }
-
-    /**
-     * @param minus the minus to set
-     */
-    public void setMinus(javax.swing.JButton minus) {
-        this.minus = minus;
-    }
-
-    /**
-     * @return the multiply
-     */
-    public javax.swing.JButton getMultiply() {
-        return multiply;
-    }
-
-    /**
-     * @param multiply the multiply to set
-     */
-    public void setMultiply(javax.swing.JButton multiply) {
-        this.multiply = multiply;
-    }
-
-    /**
-     * @return the number1TextField
-     */
-    public javax.swing.JTextField getNumber1TextField() {
-        return number1TextField;
-    }
-
-    /**
-     * @param number1TextField the number1TextField to set
-     */
-    public void setNumber1TextField(javax.swing.JTextField number1TextField) {
-        this.number1TextField = number1TextField;
-    }
-
-    /**
-     * @return the number2TextField
-     */
-    public javax.swing.JTextField getNumber2TextField() {
-        return number2TextField;
-    }
-
-    /**
-     * @param number2TextField the number2TextField to set
-     */
-    public void setNumber2TextField(javax.swing.JTextField number2TextField) {
-        this.number2TextField = number2TextField;
-    }
-
-    /**
-     * @return the resultTextField
-     */
-    public javax.swing.JTextField getResultTextField() {
-        return resultTextField;
-    }
-
-    /**
-     * @param resultTextField the resultTextField to set
-     */
-    public void setResultTextField(javax.swing.JTextField resultTextField) {
-        this.resultTextField = resultTextField;
-    }
-
-    public int number1;
-    public int number2;
-    public String operation;
-    public int result;
-    public boolean click = false;
+    private Socket socket = null;
+    private Scanner scanin = null;
+    private Scanner scanout = null;
+    PrintStream printServer = null;
+    
+    private int number1;
+    private int number2;
+    private String operation;
+    private int result;
 
     /**
      * Creates new form calculator
      */
-    public calculator() {
+    public calculator(String address ,int  port) {
         initComponents();
+
+        try {
+            socket = new Socket(address, port);
+            System.out.println("connected");
+           // scanin = new Scanner(System.in);
+            scanout = new Scanner(socket.getInputStream());
+
+        } catch (UnknownHostException e) {
+            System.out.println(e);
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+        PrintStream printServer = null;
+
     }
 
     /**
@@ -242,17 +198,31 @@ public class calculator extends javax.swing.JFrame {
     private void multiplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_multiplyActionPerformed
         // TODO add your handling code here:
         operation = "mult";
-        number1 = Integer.parseInt(getNumber1TextField().getText());
-        number2 = Integer.parseInt(getNumber2TextField().getText());
-        click = true;
+        number1 = Integer.parseInt(number1TextField.getText());
+        number2 = Integer.parseInt(number2TextField.getText());
+        System.out.println(operation);
+        System.out.println(number2);
+        System.out.println(number1);
+        try {
+            printServer= new PrintStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+        printServer.println(number1);
+        printServer.println(number2);
+        printServer.println(operation);
+        
+        
+        double result = scanout.nextDouble();
+        resultTextField.setText(result+"");
     }//GEN-LAST:event_multiplyActionPerformed
 
     private void divisionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_divisionActionPerformed
         // TODO add your handling code here:
         operation = "div";
-        number1 = Integer.parseInt(getNumber1TextField().getText());
-        number2 = Integer.parseInt(getNumber2TextField().getText());
-        click = true;
+        number1 = Integer.parseInt(number1TextField.getText());
+        number2 = Integer.parseInt(number2TextField.getText());
+        
     }//GEN-LAST:event_divisionActionPerformed
 
     private void number1TextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_number1TextFieldActionPerformed
@@ -262,17 +232,16 @@ public class calculator extends javax.swing.JFrame {
     private void plusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusActionPerformed
         // TODO add your handling code here:
         operation = "sum";
-        number1 = Integer.parseInt(getNumber1TextField().getText());
-        number2 = Integer.parseInt(getNumber2TextField().getText());
-        click = true;
+        number1 = Integer.parseInt(number1TextField.getText());
+        number2 = Integer.parseInt(number2TextField.getText());
     }//GEN-LAST:event_plusActionPerformed
 
     private void minusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusActionPerformed
         // TODO add your handling code here:
         operation = "sub";
-        number1 = Integer.parseInt(getNumber1TextField().getText());
-        number2 = Integer.parseInt(getNumber2TextField().getText());
-        click = true;
+        number1 = Integer.parseInt(number1TextField.getText());
+        number2 = Integer.parseInt(number2TextField.getText());
+   
     }//GEN-LAST:event_minusActionPerformed
 
     /**
@@ -305,7 +274,7 @@ public class calculator extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new calculator().setVisible(true);
+                new calculator("127.0.0.1" , 3006).setVisible(true);
             }
         });
     }
