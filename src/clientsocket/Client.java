@@ -37,7 +37,7 @@ public class Client {
   
             String expression = sc.nextLine(); 
   
-            if (expression.equals("bye")) 
+            if (expression.equals("exit")) 
                 break; 
   
             // send the equation to server 
@@ -46,6 +46,10 @@ public class Client {
             // wait till request is processed and sent back to client 
             String result = inputStream.readUTF(); 
             System.out.println("Server excution done !!!\nresult=" + result); 
+            System.out.println("---------------------------------------------");
         } 
+        s.close();
+        inputStream.close();
+        outputstream.close();
     } 
 }
