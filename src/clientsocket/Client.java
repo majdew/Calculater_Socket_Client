@@ -21,6 +21,7 @@ public class Client {
     { 
         InetAddress ip = InetAddress.getLocalHost(); 
         int port = 3006; 
+        //192.168.1.120
         Scanner sc = new Scanner(System.in); 
   
         //  Open the socket connection. 
